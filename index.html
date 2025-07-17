@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guilherme Soares | Desenvolvedor Web</title>
+    <meta name="description" content="Desenvolvedor Web especializado em React, Node.js, ColdFusion e integrações de API. Transforme sua presença online com soluções personalizadas.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Custom CSS for animations and effects */
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .modal {
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        
+        .modal-content {
+            transition: transform 0.3s ease;
+        }
+        
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+        
+        .skill-badge:hover {
+            transform: scale(1.05);
+        }
+        
+        .testimonial-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .fade-in {
+            animation: fadeIn 1s ease-in-out;
+        }
+    </style>
+</head>
+<body class="font-sans bg-gray-50 text-gray-800">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-3">
+            <div class="flex justify-between items-center">
+                <div>
+                    <a href="#" class="text-2xl font-bold text-indigo-600">Guilherme Soares</a>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#about" class="text-gray-700 hover:text-indigo-600 transition">Sobre</a>
+                    <a href="#projects" class="text-gray-700 hover:text-indigo-600 transition">Projetos</a>
+                    <a href="#services" class="text-gray-700 hover:text-indigo-600 transition">Serviços</a>
+                    <a href="#testimonials" class="text-gray-700 hover:text-indigo-600 transition">Depoimentos</a>
+                    <a href="#contact" class="text-gray-700 hover:text-indigo-600 transition">Contato</a>
+                </div>
+                <div class="md:hidden">
+                    <button id="menu-btn" class="text-gray-700 focus:outline-none">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <!-- Mobile menu -->
+            <div id="mobile-menu" class="hidden md:hidden mt-4 pb-4">
+                <a href="#about" class="block py-2 text-gray-700 hover:text-indigo-600 transition">Sobre</a>
+                <a href="#projects" class="block py-2 text-gray-700 hover:text-indigo-600 transition">Projetos</a>
+                <a href="#services" class="block py-2 text-gray-700 hover:text-indigo-600 transition">Serviços</a>
+                <a href="#testimonials" class="block py-2 text-gray-700 hover:text-indigo-600 transition">Depoimentos</a>
+                <a href="#contact" class="block py-2 text-gray-700 hover:text-indigo-600 transition">Contato</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-20">
+        <div class="container mx-auto px-6 text-center">
+            <h1 class="text-4xl md:text-6xl font-bold mb-6 fade-in">Transforme sua presença online com um desenvolvedor Web experiente</h1>
+            <p class="text-xl md:text-2xl mb-10 max-w-3xl mx-auto fade-in">Especializado em ColdFusion, React, Node.js, SQL Server, Java e integrações de API para soluções robustas e escaláveis.</p>
+            <a href="https://wa.me/5511943290966" target="_blank" class="bg-white text-indigo-600 font-bold py-3 px-8 rounded-full hover:bg-gray-100 transition duration-300 transform hover:scale-105 inline-block fade-in">
+                Vamos conversar
+            </a>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-20 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-10 md:mb-0">
+                    <img src="https://images.unsplash.com/photo-1571171637578-41bc2dd41cd2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Guilherme Soares" class="rounded-lg shadow-xl w-full max-w-md mx-auto">
+                </div>
+                <div class="md:w-1/2 md:pl-12">
+                    <h2 class="text-3xl font-bold mb-6 text-gray-800">Quem sou eu</h2>
+                    <p class="text-lg mb-6 text-gray-600">
+                        Meu nome é Guilherme Henrique Santos Soares, sou Desenvolvedor Web com experiência em empresas como IT Power, Positivo Tecnologia e Mercado Livre. Atualmente curso Ciência da Computação na Universidade São Judas Tadeu, combinando conhecimento acadêmico com experiência prática para entregar soluções de alta qualidade.
+                    </p>
+                    <p class="text-lg mb-8 text-gray-600">
+                        Minha paixão é criar sistemas web eficientes, escaláveis e com excelente experiência do usuário. Acredito que a tecnologia deve ser acessível e resolver problemas reais dos negócios.
+                    </p>
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4 text-gray-800">Minhas habilidades</h3>
+                        <div class="flex flex-wrap gap-3">
+                            <span class="skill-badge bg-indigo-100 text-indigo-800 px-4 py-2 rounded-full font-medium transition">JavaScript</span>
+                            <span class="skill-badge bg-indigo-100 text-indigo-800 px-4 py-2 rounded-full font-medium transition">Tailwind CSS</span>
+                            <span class="skill-badge bg-indigo-100 text-indigo-800 px-4 py-2 rounded-full font-medium transition">React</span>
+                            <span class="skill-badge bg-indigo-100 text-indigo-800 px-4 py-2 rounded-full font-medium transition">ColdFusion</span>
+                            <span class="skill-badge bg-indigo-100 text-indigo-800 px-4 py-2 rounded-full font-medium transition">SQL Server</span>
+                            <span class="skill-badge bg-indigo-100 text-indigo-800 px-4 py-2 rounded-full font-medium transition">PostgreSQL</span>
+                            <span class="skill-badge bg-indigo-100 text-indigo-800 px-4 py-2 rounded-full font-medium transition">Java</span>
+                            <span class="skill-badge bg-indigo-100 text-indigo-800 px-4 py-2 rounded-full font-medium transition">Node.js</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="py-20 bg-gray-50">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-bold text-center mb-16 text-gray-800">Projetos em Destaque</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Project 1 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-md card-hover transition duration-300">
+                    <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Dashboard Financeiro" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2 text-gray-800">Dashboard Financeiro</h3>
+                        <p class="text-gray-600 mb-4">Sistema de análise de dados financeiros em tempo real com gráficos interativos.</p>
+                        <button onclick="openModal('modal1')" class="text-indigo-600 font-medium hover:text-indigo-800 transition">Ver detalhes</button>
+                    </div>
+                </div>
+                
+                <!-- Project 2 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-md card-hover transition duration-300">
+                    <img src="https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1469&q=80" alt="E-commerce" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2 text-gray-800">Plataforma E-commerce</h3>
+                        <p class="text-gray-600 mb-4">Loja virtual completa com carrinho, checkout e integração com pagamentos.</p>
+                        <button onclick="openModal('modal2')" class="text-indigo-600 font-medium hover:text-indigo-800 transition">Ver detalhes</button>
+                    </div>
+                </div>
+                
+                <!-- Project 3 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-md card-hover transition duration-300">
+                    <img src="https://images.unsplash.com/photo-1559028012-481c04fa702d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1436&q=80" alt="Sistema de Agendamento" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2 text-gray-800">Sistema de Agendamento</h3>
+                        <p class="text-gray-600 mb-4">Plataforma para marcação de consultas com notificações e confirmação.</p>
+                        <button onclick="openModal('modal3')" class="text-indigo-600 font-medium hover:text-indigo-800 transition">Ver detalhes</button>
+                    </div>
+                </div>
+                
+                <!-- Project 4 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-md card-hover transition duration-300">
+                    <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Rede Social" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2 text-gray-800">Rede Social Profissional</h3>
+                        <p class="text-gray-600 mb-4">Plataforma de networking com perfis, conexões e feed de atividades.</p>
+                        <button onclick="openModal('modal4')" class="text-indigo-600 font-medium hover:text-indigo-800 transition">Ver detalhes</button>
+                    </div>
+                </div>
+                
+                <!-- Project 5 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-md card-hover transition duration-300">
+                    <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="ERP Customizado" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2 text-gray-800">ERP Customizado</h3>
+                        <p class="text-gray-600 mb-4">Sistema de gestão empresarial adaptado às necessidades do cliente.</p>
+                        <button onclick="openModal('modal5')" class="text-indigo-600 font-medium hover:text-indigo-800 transition">Ver detalhes</button>
+                    </div>
+                </div>
+                
+                <!-- Project 6 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-md card-hover transition duration-300">
+                    <img src="https://images.unsplash.com/photo-1522542550221-31fd19575a2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Aplicativo Mobile" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2 text-gray-800">Aplicativo Mobile</h3>
+                        <p class="text-gray-600 mb-4">Aplicativo React Native para gestão de tarefas e produtividade.</p>
+                        <button onclick="openModal('modal6')" class="text-indigo-600 font-medium hover:text-indigo-800 transition">Ver detalhes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="py-20 bg-indigo-600 text-white">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-bold text-center mb-6">O que dizem meus clientes</h2>
+            <p class="text-center text-indigo-100 max-w-2xl mx-auto mb-12">Confira alguns depoimentos de clientes satisfeitos com meus serviços.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Testimonial 1 -->
+                <div class="bg-white bg-opacity-10 rounded-lg p-8 testimonial-card transition duration-300">
+                    <div class="flex items-center mb-4">
+                        <div class="text-yellow-400 text-2xl">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                    <p class="mb-6 text-indigo-50">"Guilherme transformou completamente nosso sistema de gestão. O projeto foi entregue antes do prazo e com qualidade excepcional. Recomendo fortemente!"</p>
+                    <div class="flex items-center">
+                        <div class="bg-indigo-500 rounded-full h-10 w-10 flex items-center justify-center">
+                            <span class="font-bold">JS</span>
+                        </div>
+                        <div class="ml-4">
+                            <h4 class="font-semibold">João Silva</h4>
+                            <p class="text-indigo-200 text-sm">CEO, TechSolutions</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Testimonial 2 -->
+                <div class="bg-white bg-opacity-10 rounded-lg p-8 testimonial-card transition duration-300">
+                    <div class="flex items-center mb-4">
+                        <div class="text-yellow-400 text-2xl">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                    <p class="mb-6 text-indigo-50">"Trabalhei com vários desenvolvedores, mas a atenção aos detalhes e comunicação clara do Guilherme são incomparáveis. Nosso e-commerce nunca funcionou tão bem."</p>
+                    <div class="flex items-center">
+                        <div class="bg-indigo-500 rounded-full h-10 w-10 flex items-center justify-center">
+                            <span class="font-bold">AM</span>
+                        </div>
+                        <div class="ml-4">
+                            <h4 class="font-semibold">Ana Martins</h4>
+                            <p class="text-indigo-200 text-sm">Diretora, ModaOnline</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Testimonial 3 -->
+                <div class="bg-white bg-opacity-10 rounded-lg p-8 testimonial-card transition duration-300">
+                    <div class="flex items-center mb-4">
+                        <div class="text-yellow-400 text-2xl">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                        </div>
+                    </div>
+                    <p class="mb-6 text-indigo-50">"O sistema que Guilherme desenvolveu automatizou nossos processos e economizou centenas de horas de trabalho manual. Excelente relação custo-benefício."</p>
+                    <div class="flex items-center">
+                        <div class="bg-indigo-500 rounded-full h-10 w-10 flex items-center justify-center">
+                            <span class="font-bold">CR</span>
+                        </div>
+                        <div class="ml-4">
+                            <h4 class="font-semibold">Carlos Rocha</h4>
+                            <p class="text-indigo-200 text-sm">Gerente, LogísticaTotal</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-16 text-center">
+                <div class="bg-white bg-opacity-20 inline-block px-6 py-3 rounded-full">
+                    <p class="font-semibold">Vagas limitadas para novos projetos este mês</p>
+                </div>
+                <a href="#contact" class="mt-6 inline-block bg-white text-indigo-600 font-bold py-3 px-8 rounded-full hover:bg-gray-100 transition duration-300">
+                    Garanta seu projeto agora
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="py-20 bg-white">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-bold text-center mb-16 text-gray-800">Serviços Oferecidos</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Service 1 -->
+                <div class="bg-gray-50 rounded-lg p-8 text-center hover:shadow-lg transition duration-300">
+                    <div class="bg-indigo-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-laptop-code text-indigo-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3 text-gray-800">Desenvolvimento Full Stack</h3>
+                    <p class="text-gray-600">Soluções completas, do front-end ao back-end, utilizando as melhores tecnologias do mercado.</p>
+                </div>
+                
+                <!-- Service 2 -->
+                <div class="bg-gray-50 rounded-lg p-8 text-center hover:shadow-lg transition duration-300">
+                    <div class="bg-indigo-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-plug text-indigo-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3 text-gray-800">Integrações de API</h3>
+                    <p class="text-gray-600">Conexão entre diferentes sistemas e serviços através de APIs robustas e seguras.</p>
+                </div>
+                
+                <!-- Service 3 -->
+                <div class="bg-gray-50 rounded-lg p-8 text-center hover:shadow-lg transition duration-300">
+                    <div class="bg-indigo-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-tools text-indigo-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3 text-gray-800">Manutenção de Sites</h3>
+                    <p class="text-gray-600">Atualizações, correções e melhorias para manter seu site sempre funcionando perfeitamente.</p>
+                </div>
+                
+                <!-- Service 4 -->
+                <div class="bg-gray-50 rounded-lg p-8 text-center hover:shadow-lg transition duration-300">
+                    <div class="bg-indigo-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-tachometer-alt text-indigo-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3 text-gray-800">Otimização de Performance</h3>
+                    <p class="text-gray-600">Melhorias para tornar seu site mais rápido, melhorando a experiência do usuário e SEO.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-10">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <p>&copy; 2023 Guilherme Soares. Todos os direitos reservados.</p>
+                    <p class="text-gray-400 text-sm mt-2">Feito com Tailwind CSS e JavaScript puro</p>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="#" class="hover:text-indigo-400 transition">
+                        <i class="fab fa-linkedin-in text-xl"></i>
+                    </a>
+                    <a href="#" class="hover:text-indigo-400 transition">
+                        <i class="fab fa-github text-xl"></i>
+                    </a>
+                    <a href="https://wa.me/5511943290966" target="_blank" class="hover:text-indigo-400 transition">
+                        <i class="fab fa-whatsapp text-xl"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Project Modals -->
+    <!-- Modal 1 -->
+    <div id="modal1" class="modal fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 opacity-0 invisible">
+        <div class="modal-content bg-white rounded-lg max-w-4xl w-full mx-4 transform translate-y-10">
+            <div class="relative">
+                <button onclick="closeModal('modal1')" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+                <div class="p-8">
+                    <div class="flex flex-col md:flex-row gap-8">
+                        <div class="md:w-1/2">
+                            <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Dashboard Financeiro" class="rounded-lg w-full">
+                        </div>
+                        <div class="md:w-1/2">
+                            <h3 class="text-2xl font-bold mb-4 text-gray-800">Dashboard Financeiro</h3>
+                            <p class="text-gray-600 mb-6">Sistema completo de análise financeira desenvolvido com React para o front-end e Node.js para o back-end. Integração com diversas fontes de dados em tempo real e visualizações interativas.</p>
+                            <ul class="mb-6 space-y-2">
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-indigo-600 mt-1 mr-2"></i>
+                                    <span>Gráficos dinâmicos e personalizáveis</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-indigo-600 mt-1 mr-2"></i>
+                                    <span>Exportação de relatórios em PDF e Excel</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-indigo-600 mt-1 mr-2"></i>
+                                    <span>Alertas personalizados por e-mail</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-indigo-600 mt-1 mr-2"></i>
+                                    <span>Controle de acesso por níveis</span>
+                                </li>
+                            </ul>
+                            <a href="https://wa.me/5511943290966" target="_blank" class="inline-block bg-indigo-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-indigo-700 transition">
+                                Peça este site
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 2 -->
+    <div id="modal2" class="modal fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 opacity-0 invisible">
+        <div class="modal-content bg-white rounded-lg max-w-4xl w-full mx-4 transform translate-y-10">
+            <div class="relative">
+                <button onclick="closeModal('modal2')" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+                <div class="p-8">
+                    <div class="flex flex-col md:flex-row gap-8">
+                        <div class="md:w-1/2">
+                            <img src="https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1469&q=80" alt="E-commerce" class="rounded-lg w-full">
+                        </div>
+                        <div class="md:w-1/2">
+                            <h3 class="text-2xl font-bold mb-4 text-gray-800">Plataforma E-commerce</h3>
+                            <p class="text-gray-600 mb-6">Loja virtual completa desenvolvida com React para o front-end e Node.js + MongoDB para o back-end. Integração com gateways de pagamento e sistemas de frete.</p>
+                            <ul class="mb-6 space-y-2">
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-indigo-600 mt-1 mr-2"></i>
+                                    <span>Carrinho de compras persistente</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-indigo-600 mt-1 mr-2"></i>
+                                    <span>Checkout em uma página</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-indigo-600 mt-1 mr-2"></i>
+                                    <span>Integração com PagSeguro e Mercado Pago</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-indigo-600 mt-1 mr-2"></i>
+                                    <span>Painel administrativo completo</span>
+                                </li>
+                            </ul>
+                            <a href="https://wa.me/5511943290966" target="_blank" class="inline-block bg-indigo-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-indigo-700 transition">
+                                Peça este site
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 3 -->
+    <div id="modal3" class="modal fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 opacity-0 invisible">
+        <div class="modal-content bg-white rounded-lg max-w-4xl w-full mx-4 transform translate-y-10">
+            <div class="relative">
+                <button onclick="closeModal('modal3')" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+                <div class="p-8">
+                    <div class="flex flex-col md:flex-row gap-8">
+                        <div class="md:w-1/2">
+                            <img src="https://images.unsplash.com/photo-1559028012-481c04fa702d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1436&q=80" alt="Sistema de Agendamento" class="rounded-lg w-full">
+                        </div>
+                        <div class="md:w-1/2">
+                            <h3 class="text-2xl font-bold mb-4 text-gray-800">Sistema de Agendamento</h3>
+                            <p class="text-gray-600 mb-6">Plataforma para marcação de consultas e serviços desenvolvida com React e ColdFusion. Inclui confirmação automática por SMS e e-mail, e integração com Google Calendar.</p>
+                            <ul class="mb-6 space-y-2">
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-indigo-600 mt-1 mr-2"></i>
+                                    <span>Agendamento online 24/7</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-indigo-600 mt-1 mr-2"></i>
+                                    <span>Lembretes automáticos</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-indigo-600 mt-1 mr-2"></i>
+                                    <span>Bloqueio de horários indisponíveis</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-indigo-600 mt-1 mr-2"></i>
+                                    <span>Pagamento online integrado</span>
+                                </li>
+                            </ul>
+                            <a href="https://wa.me/5511943290966" target="_blank" class="inline-block bg-indigo-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-indigo-700 transition">
+                                Peça este site
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 4 -->
+    <div id="modal4" class="modal fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 opacity-0 invisible">
+        <div class="modal-content bg-white rounded-lg max-w-4xl w-full mx-4 transform translate-y-10">
+            <div class="relative">
+                <button onclick="closeModal('modal4')" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+                <div class="p-8">
+                    <div class="flex flex-col md:flex-row gap-8">
+                        <div class="md:w-1/2">
+                            <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Rede Social" class="rounded-lg w-full">
+                        </div>
+                        <div class="md:w-1/2">
+                            <h3 class="text-2xl font-bold mb-4 text-gray-800">Rede Social Profissional</h3>
+                            <p class="text-gray-600 mb-6">Plataforma de networking profissional desenvolvida com React, Node.js e MongoDB. Permite conexões entre usuários, compartilhamento de conteúdo e busca por oportunidades.</p>
+                            <ul class="mb-6 space-y-2">
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-indigo-600 mt-1 mr-2"></i>
+                                    <span>Perfis profissionais completos</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-indigo-600 mt-1 mr-2"></i>
+                                    <span>Sistema de conexões e recomendações</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-indigo-600 mt-1 mr-2"></i>
+                                    <span>Feed de atividades personalizado</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-indigo-600 mt-1 mr-2"></i>
+                                    <span>Mensagens privadas e notificações</span>
+                                </li>
+                            </ul>
+                            <a href="https://wa.me/5511943290966" target="_blank" class="inline-block bg-indigo-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-indigo-700 transition">
+                                Peça este site
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 5 -->
+    <div id="modal5" class="modal fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 opacity-0 invisible">
+        <div class="modal-content bg-white rounded-lg max-w-4xl w-full mx-4 transform translate-y-10">
+            <div class="relative">
+                <button onclick="closeModal('modal5')" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+                <div class="p-8">
+                    <div class="flex flex-col md:flex-row gap-8">
+                        <div class="md:w-1/2">
+                            <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="ERP Customizado" class="rounded-lg w-full">
+                        </div>
+                        <div class="md:w-1/2">
+                            <h3 class="text-2xl font-bold mb-4 text-gray-800">ERP Customizado</h3>
+                            <p class="text-gray-600 mb-6">Sistema de gestão empresarial desenvolvido sob medida para atender às necessidades específicas do cliente. Front-end em React e back-end em Java com SQL Server.</p>
+                            <ul class="mb-6 space-y-2">
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-indigo-600 mt-1 mr-2"></i>
+                                    <span>Gestão de estoque e vendas</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-indigo-600 mt-1 mr-2"></i>
+                                    <span>Controle financeiro e contábil</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-indigo-600 mt-1 mr-2"></i>
+                                    <span>Relatórios gerenciais personalizados</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-indigo-600 mt-1 mr-2"></i>
+                                    <span>Integração com sistemas legados</span>
+                                </li>
+                            </ul>
+                            <a href="https://wa.me/5511943290966" target="_blank" class="inline-block bg-indigo-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-indigo-700 transition">
+                                Peça este site
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 6 -->
+    <div id="modal6" class="modal fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 opacity-0 invisible">
+        <div class="modal-content bg-white rounded-lg max-w-4xl w-full mx-4 transform translate-y-10">
+            <div class="relative">
+                <button onclick="closeModal('modal6')" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+                <div class="p-8">
+                    <div class="flex flex-col md:flex-row gap-8">
+                        <div class="md:w-1/2">
+                            <img src="https://images.unsplash.com/photo-1522542550221-31fd19575a2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Aplicativo Mobile" class="rounded-lg w-full">
+                        </div>
+                        <div class="md:w-1/2">
+                            <h3 class="text-2xl font-bold mb-4 text-gray-800">Aplicativo Mobile</h3>
+                            <p class="text-gray-600 mb-6">Aplicativo de produtividade desenvolvido com React Native para iOS e Android. Permite gerenciamento de tarefas, lembretes e acompanhamento de metas com sincronização em nuvem.</p>
+                            <ul class="mb-6 space-y-2">
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-indigo-600 mt-1 mr-2"></i>
+                                    <span>Interface intuitiva e responsiva</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-indigo-600 mt-1 mr-2"></i>
+                                    <span>Sincronização em tempo real</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-indigo-600 mt-1 mr-2"></i>
+                                    <span>Notificações push personalizadas</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-indigo-600 mt-1 mr-2"></i>
+                                    <span>Relatórios de produtividade</span>
+                                </li>
+                            </ul>
+                            <a href="https://wa.me/5511943290966" target="_blank" class="inline-block bg-indigo-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-indigo-700 transition">
+                                Peça este site
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mobile menu toggle
+        const menuBtn = document.getElementById('menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        menuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        // Form validation
+        const contactForm = document.getElementById('contact-form');
+        
+        contactForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            let isValid = true;
+            const name = document.getElementById('name');
+            const email = document.getElementById('email');
+            const message = document.getElementById('message');
+            
+            // Reset errors
+            document.getElementById('name-error').classList.add('hidden');
+            document.getElementById('email-error').classList.add('hidden');
+            document.getElementById('message-error').classList.add('hidden');
+            
+            // Validate name
+            if (name.value.trim() === '') {
+                document.getElementById('name-error').textContent = 'Por favor, insira seu nome';
+                document.getElementById('name-error').classList.remove('hidden');
+                isValid = false;
+            }
+            
+            // Validate email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email.value)) {
+                document.getElementById('email-error').textContent = 'Por favor, insira um e-mail válido';
+                document.getElementById('email-error').classList.remove('hidden');
+                isValid = false;
+            }
+            
+            // Validate message
+            if (message.value.trim() === '') {
+                document.getElementById('message-error').textContent = 'Por favor, insira sua mensagem';
+                document.getElementById('message-error').classList.remove('hidden');
+                isValid = false;
+            }
+            
+            if (isValid) {
+                // Here you would typically send the form data to a server
+                alert('Mensagem enviada com sucesso! Entrarei em contato em breve.');
+                contactForm.reset();
+            }
+        });
+        
+        // Modal functions
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.remove('invisible', 'opacity-0');
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.remove('active');
+            modal.classList.add('invisible', 'opacity-0');
+            document.body.style.overflow = 'auto';
+        }
+        
+        // Close modal when clicking outside content
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    const modalId = modal.id;
+                    closeModal(modalId);
+                }
+            });
+        });
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                    
+                    // Close mobile menu if open
+                    if (!mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                }
+            });
+        });
+        
+        // Add fade-in animation to elements when they come into view
+        const fadeElements = document.querySelectorAll('.fade-in');
+        
+        const fadeInObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-fadeIn');
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        fadeElements.forEach(element => {
+            fadeInObserver.observe(element);
+        });
+    </script>
+</body>
+</html>
