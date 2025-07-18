@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Financeiro</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        .sidebar {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        .chart-container {
+            transition: all 0.3s ease;
+        }
+        .chart-container:hover {
+            transform: scale(1.02);
+        }
+        .login-form {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <!-- Login Form (Initially Visible) -->
+    <div id="loginForm" class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-75 z-50 login-form">
+        <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-800">Dashboard Financeiro</h2>
+                <p class="text-gray-600 mt-2">Faça login para acessar o sistema</p>
+            </div>
+            <form id="login" class="space-y-6">
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-700">Usuário</label>
+                    <input type="text" id="username" name="username" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700">Senha</label>
+                    <input type="password" id="password" name="password" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
+                        Entrar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Dashboard (Initially Hidden) -->
+    <div id="dashboard" class="hidden">
+        <!-- Sidebar -->
+        <div class="sidebar fixed inset-y-0 left-0 bg-gray-800 text-white w-64 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out z-40">
+            <div class="p-4 flex items-center border-b border-gray-700">
+                <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center">
+                    <i class="fas fa-chart-line text-white"></i>
+                </div>
+                <div class="ml-3">
+                    <h1 class="text-xl font-bold">Financeiro</h1>
+                    <p class="text-xs text-gray-400">Dashboard</p>
+                </div>
+            </div>
+            <nav class="mt-6">
+                <div>
+                    <a href="#" class="flex items-center px-4 py-3 text-gray-200 hover:bg-gray-700 transition duration-150 ease-in-out">
+                        <i class="fas fa-home mr-3"></i>
+                        <span>Visão Geral</span>
+                    </a>
+                    <a href="#" class="flex items-center px-4 py-3 text-gray-200 hover:bg-gray-700 transition duration-150 ease-in-out">
+                        <i class="fas fa-chart-bar mr-3"></i>
+                        <span>Relatórios</span>
+                    </a>
+                    <a href="#" class="flex items-center px-4 py-3 text-gray-200 hover:bg-gray-700 transition duration-150 ease-in-out">
+                        <i class="fas fa-exchange-alt mr-3"></i>
+                        <span>Transações</span>
+                    </a>
+                    <a href="#" class="flex items-center px-4 py-3 text-gray-200 hover:bg-gray-700 transition duration-150 ease-in-out">
+                        <i class="fas fa-tags mr-3"></i>
+                        <span>Categorias</span>
+                    </a>
+                    <a href="#" class="flex items-center px-4 py-3 text-gray-200 hover:bg-gray-700 transition duration-150 ease-in-out">
+                        <i class="fas fa-cog mr-3"></i>
+                        <span>Configurações</span>
+                    </a>
+                    <div id="adminSection" class="hidden">
+                        <a href="#" class="flex items-center px-4 py-3 text-gray-200 hover:bg-gray-700 transition duration-150 ease-in-out">
+                            <i class="fas fa-users-cog mr-3"></i>
+                            <span>Administração</span>
+                        </a>
+                    </div>
+                </div>
+            </nav>
+            <div class="absolute bottom-0 w-full p-4 border-t border-gray-700">
+                <button id="logoutBtn" class="flex items-center text-gray-300 hover:text-white transition duration-150 ease-in-out">
+                    <i class="fas fa-sign-out-alt mr-2"></i>
+                    <span>Sair</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Button -->
+        <button id="sidebarToggle" class="md:hidden fixed top-4 left-4 z-50 bg-gray-800 text-white p-2 rounded-md">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <!-- Main Content -->
+        <div class="md:ml-64 transition-all duration-300 ease-in-out">
+            <!-- Top Navigation -->
+            <header class="bg-white shadow-sm">
+                <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex justify-between items-center">
+                    <h1 class="text-xl font-semibold text-gray-900">Dashboard Financeiro</h1>
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <button id="alertBtn" class="p-2 rounded-full text-gray-500 hover:text-gray-700 hover:bg-gray-100 focus:outline-none">
+                                <i class="fas fa-bell"></i>
+                                <span class="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500"></span>
+                            </button>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
+                                <i class="fas fa-user text-white"></i>
+                            </div>
+                            <span id="usernameDisplay" class="ml-2 text-sm font-medium text-gray-700"></span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content Area -->
+            <main class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+                <!-- Summary Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white rounded-lg shadow p-6 card-hover transition duration-150 ease-in-out">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Receita Total</p>
+                                <p class="mt-1 text-2xl font-semibold text-gray-900">R$ 45,231.89</p>
+                                <p class="mt-1 text-xs text-green-500">+12% vs último mês</p>
+                            </div>
+                            <div class="p-3 rounded-full bg-green-100 text-green-600">
+                                <i class="fas fa-arrow-up"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6 card-hover transition duration-150 ease-in-out">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Despesas Totais</p>
+                                <p class="mt-1 text-2xl font-semibold text-gray-900">R$ 28,654.32</p>
+                                <p class="mt-1 text-xs text-red-500">+5% vs último mês</p>
+                            </div>
+                            <div class="p-3 rounded-full bg-red-100 text-red-600">
+                                <i class="fas fa-arrow-down"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6 card-hover transition duration-150 ease-in-out">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Lucro Líquido</p>
+                                <p class="mt-1 text-2xl font-semibold text-gray-900">R$ 16,577.57</p>
+                                <p class="mt-1 text-xs text-green-500">+20% vs último mês</p>
+                            </div>
+                            <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6 card-hover transition duration-150 ease-in-out">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Saldo Atual</p>
+                                <p class="mt-1 text-2xl font-semibold text-gray-900">R$ 78,432.21</p>
+                                <p class="mt-1 text-xs text-green-500">+8% vs último mês</p>
+                            </div>
+                            <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+                                <i class="fas fa-wallet"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <!-- Revenue vs Expenses Chart -->
+                    <div class="bg-white rounded-lg shadow p-6 chart-container">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-lg font-semibold text-gray-900">Receita vs Despesas</h2>
+                            <div class="flex space-x-2">
+                                <button id="exportPdf1" class="px-3 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded transition duration-150 ease-in-out">
+                                    <i class="fas fa-file-pdf mr-1"></i> PDF
+                                </button>
+                                <button id="exportExcel1" class="px-3 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded transition duration-150 ease-in-out">
+                                    <i class="fas fa-file-excel mr-1"></i> Excel
+                                </button>
+                            </div>
+                        </div>
+                        <div class="h-80">
+                            <canvas id="revenueExpensesChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Expense Categories Chart -->
+                    <div class="bg-white rounded-lg shadow p-6 chart-container">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-lg font-semibold text-gray-900">Categorias de Despesas</h2>
+                            <div class="flex space-x-2">
+                                <button id="exportPdf2" class="px-3 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded transition duration-150 ease-in-out">
+                                    <i class="fas fa-file-pdf mr-1"></i> PDF
+                                </button>
+                                <button id="exportExcel2" class="px-3 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded transition duration-150 ease-in-out">
+                                    <i class="fas fa-file-excel mr-1"></i> Excel
+                                </button>
+                            </div>
+                        </div>
+                        <div class="h-80">
+                            <canvas id="expenseCategoriesChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Financial Trend Chart -->
+                <div class="bg-white rounded-lg shadow p-6 mb-8 chart-container">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-semibold text-gray-900">Tendência Financeira</h2>
+                        <div class="flex space-x-2">
+                            <button id="exportPdf3" class="px-3 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded transition duration-150 ease-in-out">
+                                <i class="fas fa-file-pdf mr-1"></i> PDF
+                            </button>
+                            <button id="exportExcel3" class="px-3 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded transition duration-150 ease-in-out">
+                                <i class="fas fa-file-excel mr-1"></i> Excel
+                            </button>
+                        </div>
+                    </div>
+                    <div class="h-96">
+                        <canvas id="financialTrendChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Recent Transactions and Alerts -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Recent Transactions -->
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="p-6 border-b border-gray-200">
+                            <h2 class="text-lg font-semibold text-gray-900">Transações Recentes</h2>
+                        </div>
+                        <div class="divide-y divide-gray-200">
+                            <div class="p-4 hover:bg-gray-50 transition duration-150 ease-in-out">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <div class="p-2 rounded-full bg-blue-100 text-blue-600">
+                                            <i class="fas fa-shopping-cart"></i>
+                                        </div>
+                                        <div class="ml-4">
+                                            <p class="text-sm font-medium text-gray-900">Compra de Materiais</p>
+                                            <p class="text-sm text-gray-500">15 Jun 2023</p>
+                                        </div>
+                                    </div>
+                                    <p class="text-sm font-medium text-red-600">-R$ 1,250.00</p>
+                                </div>
+                            </div>
+                            <div class="p-4 hover:bg-gray-50 transition duration-150 ease-in-out">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <div class="p-2 rounded-full bg-green-100 text-green-600">
+                                            <i class="fas fa-hand-holding-usd"></i>
+                                        </div>
+                                        <div class="ml-4">
+                                            <p class="text-sm font-medium text-gray-900">Pagamento de Cliente</p>
+                                            <p class="text-sm text-gray-500">14 Jun 2023</p>
+                                        </div>
+                                    </div>
+                                    <p class="text-sm font-medium text-green-600">+R$ 5,800.00</p>
+                                </div>
+                            </div>
+                            <div class="p-4 hover:bg-gray-50 transition duration-150 ease-in-out">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <div class="p-2 rounded-full bg-purple-100 text-purple-600">
+                                            <i class="fas fa-money-bill-wave"></i>
+                                        </div>
+                                        <div class="ml-4">
+                                            <p class="text-sm font-medium text-gray-900">Salários</p>
+                                            <p class="text-sm text-gray-500">10 Jun 2023</p>
+                                        </div>
+                                    </div>
+                                    <p class="text-sm font-medium text-red-600">-R$ 12,500.00</p>
+                                </div>
+                            </div>
+                            <div class="p-4 hover:bg-gray-50 transition duration-150 ease-in-out">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <div class="p-2 rounded-full bg-yellow-100 text-yellow-600">
+                                            <i class="fas fa-tools"></i>
+                                        </div>
+                                        <div class="ml-4">
+                                            <p class="text-sm font-medium text-gray-900">Manutenção</p>
+                                            <p class="text-sm text-gray-500">8 Jun 2023</p>
+                                        </div>
+                                    </div>
+                                    <p class="text-sm font-medium text-red-600">-R$ 850.00</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-4 border-t border-gray-200 text-center">
+                            <a href="#" class="text-sm font-medium text-blue-600 hover:text-blue-500 transition duration-150 ease-in-out">
+                                Ver todas as transações
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Alerts Section -->
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+                            <h2 class="text-lg font-semibold text-gray-900">Alertas Financeiros</h2>
+                            <button id="sendAlertBtn" class="px-3 py-1 text-xs bg-blue-600 text-white hover:bg-blue-700 rounded transition duration-150 ease-in-out">
+                                <i class="fas fa-plus mr-1"></i> Novo Alerta
+                            </button>
+                        </div>
+                        <div class="divide-y divide-gray-200">
+                            <div class="p-4 hover:bg-gray-50 transition duration-150 ease-in-out">
+                                <div class="flex items-start">
+                                    <div class="p-2 rounded-full bg-red-100 text-red-600">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                    </div>
+                                    <div class="ml-4">
+                                        <p class="text-sm font-medium text-gray-900">Despesas acima do orçamento</p>
+                                        <p class="text-sm text-gray-500">Categoria: Marketing excedeu em 15% o orçamento mensal</p>
+                                        <p class="text-xs text-gray-400 mt-1">12 Jun 2023</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-4 hover:bg-gray-50 transition duration-150 ease-in-out">
+                                <div class="flex items-start">
+                                    <div class="p-2 rounded-full bg-yellow-100 text-yellow-600">
+                                        <i class="fas fa-clock"></i>
+                                    </div>
+                                    <div class="ml-4">
+                                        <p class="text-sm font-medium text-gray-900">Pagamento pendente</p>
+                                        <p class="text-sm text-gray-500">Fatura #INV-2023-056 vence em 3 dias</p>
+                                        <p class="text-xs text-gray-400 mt-1">10 Jun 2023</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-4 hover:bg-gray-50 transition duration-150 ease-in-out">
+                                <div class="flex items-start">
+                                    <div class="p-2 rounded-full bg-green-100 text-green-600">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <div class="ml-4">
+                                        <p class="text-sm font-medium text-gray-900">Meta de receita atingida</p>
+                                        <p class="text-sm text-gray-500">Receita mensal atingiu 95% da meta projetada</p>
+                                        <p class="text-xs text-gray-400 mt-1">5 Jun 2023</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Alert Modal -->
+        <div id="alertModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Enviar Alerta Financeiro</h3>
+                    <button id="closeAlertModal" class="text-gray-400 hover:text-gray-500">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <form id="alertForm" class="space-y-4">
+                    <div>
+                        <label for="alertType" class="block text-sm font-medium text-gray-700">Tipo de Alerta</label>
+                        <select id="alertType" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                            <option value="warning">Aviso</option>
+                            <option value="danger">Crítico</option>
+                            <option value="success">Positivo</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="alertTitle" class="block text-sm font-medium text-gray-700">Título</label>
+                        <input type="text" id="alertTitle" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label for="alertMessage" class="block text-sm font-medium text-gray-700">Mensagem</label>
+                        <textarea id="alertMessage" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" id="cancelAlert" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Enviar Alerta
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Alert Notification -->
+        <div id="alertNotification" class="hidden fixed top-4 right-4 z-50">
+            <div class="bg-green-500 text-white px-4 py-3 rounded shadow-lg max-w-sm">
+                <div class="flex items-center">
+                    <div class="mr-3">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div>
+                        <p class="font-medium">Alerta enviado com sucesso!</p>
+                        <p class="text-sm">O alerta foi enviado para os destinatários configurados.</p>
+                    </div>
+                    <button id="closeNotification" class="ml-4 text-white hover:text-gray-200">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Login Logic
+        document.getElementById('login').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // Simple authentication logic
+            if ((username === 'admin' && password === 'admin123') || 
+                (username === 'user' && password === 'user123')) {
+                
+                // Hide login form
+                document.getElementById('loginForm').classList.add('hidden');
+                
+                // Show dashboard
+                document.getElementById('dashboard').classList.remove('hidden');
+                
+                // Display username
+                document.getElementById('usernameDisplay').textContent = username;
+                
+                // Show admin section if admin
+                if (username === 'admin') {
+                    document.getElementById('adminSection').classList.remove('hidden');
+                }
+                
+                // Initialize charts
+                initCharts();
+            } else {
+                alert('Usuário ou senha incorretos!');
+            }
+        });
+        
+        // Logout Logic
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            document.getElementById('dashboard').classList.add('hidden');
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        });
+        
+        // Sidebar Toggle for Mobile
+        document.getElementById('sidebarToggle').addEventListener('click', function() {
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.classList.toggle('-translate-x-full');
+        });
+        
+        // Alert Modal Logic
+        document.getElementById('alertBtn').addEventListener('click', function() {
+            document.getElementById('alertModal').classList.remove('hidden');
+        });
+        
+        document.getElementById('sendAlertBtn').addEventListener('click', function() {
+            document.getElementById('alertModal').classList.remove('hidden');
+        });
+        
+        document.getElementById('closeAlertModal').addEventListener('click', function() {
+            document.getElementById('alertModal').classList.add('hidden');
+        });
+        
+        document.getElementById('cancelAlert').addEventListener('click', function() {
+            document.getElementById('alertModal').classList.add('hidden');
+        });
+        
+        document.getElementById('alertForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            document.getElementById('alertModal').classList.add('hidden');
+            
+            // Show notification
+            const notification = document.getElementById('alertNotification');
+            notification.classList.remove('hidden');
+            
+            // Hide notification after 5 seconds
+            setTimeout(() => {
+                notification.classList.add('hidden');
+            }, 5000);
+        });
+        
+        document.getElementById('closeNotification').addEventListener('click', function() {
+            document.getElementById('alertNotification').classList.add('hidden');
+        });
+        
+        // Initialize Charts
+        function initCharts() {
+            // Revenue vs Expenses Chart (Bar Chart)
+            const revenueExpensesCtx = document.getElementById('revenueExpensesChart').getContext('2d');
+            const revenueExpensesChart = new Chart(revenueExpensesCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+                    datasets: [
+                        {
+                            label: 'Receita',
+                            data: [12000, 19000, 15000, 18000, 21000, 23000],
+                            backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Despesas',
+                            data: [8000, 12000, 10000, 11000, 15000, 14000],
+                            backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return 'R$ ' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += 'R$ ' + context.raw.toLocaleString();
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Expense Categories Chart (Doughnut Chart)
+            const expenseCategoriesCtx = document.getElementById('expenseCategoriesChart').getContext('2d');
+            const expenseCategoriesChart = new Chart(expenseCategoriesCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Salários', 'Marketing', 'Aluguel', 'Serviços', 'Outros'],
+                    datasets: [{
+                        data: [35, 25, 15, 15, 10],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.7)',
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(255, 206, 86, 0.7)',
+                            'rgba(75, 192, 192, 0.7)',
+                            'rgba(153, 102, 255, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((value / total) * 100);
+                                    return `${label}: ${percentage}% (R$ ${value.toLocaleString()})`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Financial Trend Chart (Line Chart)
+            const financialTrendCtx = document.getElementById('financialTrendChart').getContext('2d');
+            const financialTrendChart = new Chart(financialTrendCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+                    datasets: [
+                        {
+                            label: 'Receita',
+                            data: [12000, 19000, 15000, 18000, 21000, 23000],
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            backgroundColor: 'rgba(54, 162, 235, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.3
+                        },
+                        {
+                            label: 'Despesas',
+                            data: [8000, 12000, 10000, 11000, 15000, 14000],
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.3
+                        },
+                        {
+                            label: 'Lucro Líquido',
+                            data: [4000, 7000, 5000, 7000, 6000, 9000],
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return 'R$ ' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += 'R$ ' + context.raw.toLocaleString();
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Export to PDF functionality
+            function exportToPdf(chartId, fileName) {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                const canvas = document.getElementById(chartId);
+                const imgData = canvas.toDataURL('image/png');
+                
+                doc.text(fileName, 10, 10);
+                doc.addImage(imgData, 'PNG', 10, 20, 180, 100);
+                doc.save(fileName + '.pdf');
+            }
+            
+            // Export to Excel functionality
+            function exportToExcel(chartId, fileName) {
+                const chart = getChartFromCanvasId(chartId);
+                const data = [];
+                
+                // Add headers
+                if (chart.config.type === 'bar' || chart.config.type === 'line') {
+                    const headers = ['Mês'].concat(chart.data.datasets.map(d => d.label));
+                    data.push(headers);
+                    
+                    // Add data rows
+                    chart.data.labels.forEach((label, i) => {
+                        const row = [label];
+                        chart.data.datasets.forEach(dataset => {
+                            row.push(dataset.data[i]);
+                        });
+                        data.push(row);
+                    });
+                } else if (chart.config.type === 'doughnut') {
+                    data.push(['Categoria', 'Valor']);
+                    chart.data.labels.forEach((label, i) => {
+                        data.push([label, chart.data.datasets[0].data[i]]);
+                    });
+                }
+                
+                const ws = XLSX.utils.aoa_to_sheet(data);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Dados");
+                XLSX.writeFile(wb, fileName + '.xlsx');
+            }
+            
+            function getChartFromCanvasId(canvasId) {
+                const canvas = document.getElementById(canvasId);
+                return Chart.getChart(canvas);
+            }
+            
+            // Set up export buttons
+            document.getElementById('exportPdf1').addEventListener('click', () => exportToPdf('revenueExpensesChart', 'Receita_vs_Despesas'));
+            document.getElementById('exportExcel1').addEventListener('click', () => exportToExcel('revenueExpensesChart', 'Receita_vs_Despesas'));
+            
+            document.getElementById('exportPdf2').addEventListener('click', () => exportToPdf('expenseCategoriesChart', 'Categorias_de_Despesas'));
+            document.getElementById('exportExcel2').addEventListener('click', () => exportToExcel('expenseCategoriesChart', 'Categorias_de_Despesas'));
+            
+            document.getElementById('exportPdf3').addEventListener('click', () => exportToPdf('financialTrendChart', 'Tendencia_Financeira'));
+            document.getElementById('exportExcel3').addEventListener('click', () => exportToExcel('financialTrendChart', 'Tendencia_Financeira'));
+        }
+    </script>
+</body>
+</html>

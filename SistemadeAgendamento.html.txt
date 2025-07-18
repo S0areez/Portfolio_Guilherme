@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agendamento de Consultas | HealthPlus</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Custom CSS for animations and transitions */
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .btn-pulse {
+            transition: all 0.3s ease;
+        }
+        
+        .btn-pulse:active {
+            transform: scale(0.95);
+        }
+        
+        .calendar-day:hover:not(.disabled) {
+            background-color: #e0f2fe;
+            cursor: pointer;
+        }
+        
+        .calendar-day.selected {
+            background-color: #0369a1;
+            color: white;
+        }
+        
+        .time-slot:hover:not(.booked) {
+            background-color: #e0f2fe;
+            cursor: pointer;
+        }
+        
+        .time-slot.selected {
+            background-color: #0369a1;
+            color: white;
+        }
+        
+        .modal {
+            transition: all 0.3s ease;
+        }
+        
+        .modal-hidden {
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px);
+        }
+        
+        .modal-visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-md">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-heartbeat text-3xl text-blue-800"></i>
+                <h1 class="text-2xl font-bold text-blue-800">Health<span class="text-blue-500">Plus</span></h1>
+            </div>
+            <nav class="hidden md:block">
+                <ul class="flex space-x-6">
+                    <li><a href="#" class="text-blue-800 hover:text-blue-600 font-medium">Início</a></li>
+                    <li><a href="#" class="text-blue-800 hover:text-blue-600 font-medium">Serviços</a></li>
+                    <li><a href="#" class="text-blue-800 hover:text-blue-600 font-medium">Médicos</a></li>
+                    <li><a href="#" class="text-blue-800 hover:text-blue-600 font-medium">Contato</a></li>
+                </ul>
+            </nav>
+            <button class="md:hidden text-blue-800">
+                <i class="fas fa-bars text-2xl"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <div class="text-center mb-8">
+            <h2 class="text-3xl font-bold text-blue-800 mb-2">Agende sua consulta</h2>
+            <p class="text-gray-600 max-w-2xl mx-auto">Escolha uma data e horário disponíveis para marcar sua consulta ou exame</p>
+        </div>
+
+        <!-- Calendar Section -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-semibold text-blue-800">Selecione uma data</h3>
+                <div class="flex space-x-2">
+                    <button id="prev-month" class="btn-pulse px-3 py-1 bg-blue-100 text-blue-800 rounded hover:bg-blue-200">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button id="next-month" class="btn-pulse px-3 py-1 bg-blue-100 text-blue-800 rounded hover:bg-blue-200">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div id="current-month" class="text-lg font-medium text-blue-800 mb-4 text-center">Junho 2023</div>
+            
+            <div class="grid grid-cols-7 gap-2 mb-4">
+                <div class="text-center font-medium text-blue-800 py-2">Dom</div>
+                <div class="text-center font-medium text-blue-800 py-2">Seg</div>
+                <div class="text-center font-medium text-blue-800 py-2">Ter</div>
+                <div class="text-center font-medium text-blue-800 py-2">Qua</div>
+                <div class="text-center font-medium text-blue-800 py-2">Qui</div>
+                <div class="text-center font-medium text-blue-800 py-2">Sex</div>
+                <div class="text-center font-medium text-blue-800 py-2">Sáb</div>
+            </div>
+            
+            <div id="calendar-days" class="grid grid-cols-7 gap-2">
+                <!-- Calendar days will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Time Slots Section (hidden by default) -->
+        <div id="time-slots-section" class="bg-white rounded-lg shadow-md p-6 mb-8 hidden fade-in">
+            <h3 class="text-xl font-semibold text-blue-800 mb-4">Horários disponíveis para <span id="selected-date-text"></span></h3>
+            <div id="time-slots" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                <!-- Time slots will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Booking Form (hidden by default) -->
+        <div id="booking-form" class="bg-white rounded-lg shadow-md p-6 hidden fade-in">
+            <h3 class="text-xl font-semibold text-blue-800 mb-4">Preencha seus dados</h3>
+            <p class="text-gray-600 mb-6">Você está agendando para: <span id="booking-time-text" class="font-medium text-blue-800"></span></p>
+            
+            <form id="appointment-form" class="space-y-4">
+                <div>
+                    <label for="name" class="block text-gray-700 mb-1">Nome completo*</label>
+                    <input type="text" id="name" name="name" required 
+                           class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                
+                <div>
+                    <label for="email" class="block text-gray-700 mb-1">E-mail*</label>
+                    <input type="email" id="email" name="email" required 
+                           class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                
+                <div>
+                    <label for="phone" class="block text-gray-700 mb-1">Telefone*</label>
+                    <input type="tel" id="phone" name="phone" required 
+                           class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                
+                <div>
+                    <label for="notes" class="block text-gray-700 mb-1">Observações (opcional)</label>
+                    <textarea id="notes" name="notes" rows="3" 
+                              class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                </div>
+                
+                <div class="flex items-center">
+                    <input type="checkbox" id="reminders" name="reminders" checked 
+                           class="mr-2 h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                    <label for="reminders" class="text-gray-700">Receber lembretes por e-mail e SMS</label>
+                </div>
+                
+                <div class="pt-4 flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
+                    <button type="submit" class="btn-pulse flex-1 bg-blue-800 text-white py-3 px-6 rounded hover:bg-blue-700 transition duration-300">
+                        Confirmar Agendamento
+                    </button>
+                    <button type="button" id="cancel-booking" class="btn-pulse flex-1 bg-gray-200 text-gray-800 py-3 px-6 rounded hover:bg-gray-300 transition duration-300">
+                        Cancelar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmation-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 modal modal-hidden">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6 fade-in">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-check text-green-600 text-3xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-2">Agendamento confirmado!</h3>
+                <p class="text-gray-600">Detalhes do seu agendamento foram enviados para seu e-mail e WhatsApp.</p>
+            </div>
+            
+            <div class="bg-blue-50 rounded-lg p-4 mb-6">
+                <div class="flex justify-between mb-2">
+                    <span class="text-gray-600">Data:</span>
+                    <span id="confirmation-date" class="font-medium text-blue-800"></span>
+                </div>
+                <div class="flex justify-between mb-2">
+                    <span class="text-gray-600">Horário:</span>
+                    <span id="confirmation-time" class="font-medium text-blue-800"></span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Paciente:</span>
+                    <span id="confirmation-name" class="font-medium text-blue-800"></span>
+                </div>
+            </div>
+            
+            <div class="text-center text-sm text-gray-500 mb-4">
+                <i class="fas fa-bell mr-1"></i> Lembretes automáticos serão enviados 24h e 1h antes da consulta.
+            </div>
+            
+            <div class="flex flex-col space-y-3">
+                <a id="google-calendar-btn" href="#" target="_blank" class="btn-pulse bg-white border border-gray-300 text-gray-800 py-2 px-4 rounded hover:bg-gray-100 flex items-center justify-center">
+                    <i class="fab fa-google mr-2"></i> Adicionar ao Google Calendar
+                </a>
+                <button id="close-modal" class="btn-pulse bg-blue-800 text-white py-2 px-4 rounded hover:bg-blue-700">
+                    Fechar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Current date
+            let currentDate = new Date();
+            let selectedDate = null;
+            let selectedTime = null;
+            
+            // DOM Elements
+            const calendarDays = document.getElementById('calendar-days');
+            const currentMonthEl = document.getElementById('current-month');
+            const prevMonthBtn = document.getElementById('prev-month');
+            const nextMonthBtn = document.getElementById('next-month');
+            const timeSlotsSection = document.getElementById('time-slots-section');
+            const selectedDateText = document.getElementById('selected-date-text');
+            const timeSlots = document.getElementById('time-slots');
+            const bookingForm = document.getElementById('booking-form');
+            const bookingTimeText = document.getElementById('booking-time-text');
+            const appointmentForm = document.getElementById('appointment-form');
+            const cancelBookingBtn = document.getElementById('cancel-booking');
+            const confirmationModal = document.getElementById('confirmation-modal');
+            const closeModalBtn = document.getElementById('close-modal');
+            const confirmationDate = document.getElementById('confirmation-date');
+            const confirmationTime = document.getElementById('confirmation-time');
+            const confirmationName = document.getElementById('confirmation-name');
+            const googleCalendarBtn = document.getElementById('google-calendar-btn');
+            
+            // Booked dates and times (simulated data)
+            const bookedDates = [
+                { date: '2023-06-15', times: ['09:00', '10:30', '14:00'] },
+                { date: '2023-06-20', times: ['08:30', '11:00', '15:30'] },
+                { date: '2023-06-25', times: ['10:00', '13:30', '16:00'] }
+            ];
+            
+            // Generate calendar
+            function generateCalendar() {
+                // Clear previous calendar
+                calendarDays.innerHTML = '';
+                
+                // Set current month text
+                const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", 
+                                   "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+                currentMonthEl.textContent = `${monthNames[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+                
+                // Get first day of month and total days in month
+                const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+                const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+                
+                // Get day of week for first day (0 = Sunday, 6 = Saturday)
+                const firstDayIndex = firstDay.getDay();
+                
+                // Add empty cells for days before first day of month
+                for (let i = 0; i < firstDayIndex; i++) {
+                    const emptyCell = document.createElement('div');
+                    emptyCell.className = 'h-12';
+                    calendarDays.appendChild(emptyCell);
+                }
+                
+                // Add cells for each day of month
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+                    const dateString = formatDate(date);
+                    
+                    // Check if date is in the past or booked
+                    const isPastDate = date < new Date(new Date().setHours(0, 0, 0, 0));
+                    const isBookedDate = bookedDates.some(booked => booked.date === dateString);
+                    
+                    const dayElement = document.createElement('div');
+                    dayElement.className = `calendar-day text-center py-2 rounded ${isPastDate || isBookedDate ? 'disabled text-gray-400' : 'text-blue-800 hover:bg-blue-100'}`;
+                    dayElement.textContent = day;
+                    
+                    if (!isPastDate && !isBookedDate) {
+                        dayElement.addEventListener('click', () => selectDate(date));
+                    }
+                    
+                    // Highlight today
+                    if (date.toDateString() === new Date().toDateString()) {
+                        dayElement.className += ' border border-blue-500';
+                    }
+                    
+                    calendarDays.appendChild(dayElement);
+                }
+            }
+            
+            // Format date as YYYY-MM-DD
+            function formatDate(date) {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+            
+            // Format date for display (e.g., "15 de Junho de 2023")
+            function formatDisplayDate(date) {
+                const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", 
+                                   "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+                return `${date.getDate()} de ${monthNames[date.getMonth()]} de ${date.getFullYear()}`;
+            }
+            
+            // Select a date
+            function selectDate(date) {
+                selectedDate = date;
+                const dateString = formatDate(date);
+                
+                // Update UI
+                document.querySelectorAll('.calendar-day').forEach(day => {
+                    day.classList.remove('selected');
+                    if (day.textContent == date.getDate()) {
+                        day.classList.add('selected');
+                    }
+                });
+                
+                // Show time slots
+                selectedDateText.textContent = formatDisplayDate(date);
+                generateTimeSlots(dateString);
+                timeSlotsSection.classList.remove('hidden');
+                bookingForm.classList.add('hidden');
+                
+                // Scroll to time slots
+                timeSlotsSection.scrollIntoView({ behavior: 'smooth' });
+            }
+            
+            // Generate time slots for selected date
+            function generateTimeSlots(dateString) {
+                timeSlots.innerHTML = '';
+                
+                // Check if date is booked
+                const bookedDate = bookedDates.find(booked => booked.date === dateString);
+                const bookedTimes = bookedDate ? bookedDate.times : [];
+                
+                // Generate time slots (every 30 minutes from 8:00 to 17:00)
+                for (let hour = 8; hour <= 17; hour++) {
+                    for (let minute = 0; minute < 60; minute += 30) {
+                        const timeString = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+                        const isBooked = bookedTimes.includes(timeString);
+                        
+                        const timeSlot = document.createElement('div');
+                        timeSlot.className = `time-slot text-center py-2 px-4 rounded border ${isBooked ? 'booked bg-gray-100 text-gray-400 border-gray-200' : 'border-blue-200 text-blue-800 hover:bg-blue-100'}`;
+                        timeSlot.textContent = timeString;
+                        
+                        if (!isBooked) {
+                            timeSlot.addEventListener('click', () => selectTime(timeString));
+                        }
+                        
+                        timeSlots.appendChild(timeSlot);
+                    }
+                }
+            }
+            
+            // Select a time slot
+            function selectTime(time) {
+                selectedTime = time;
+                
+                // Update UI
+                document.querySelectorAll('.time-slot').forEach(slot => {
+                    slot.classList.remove('selected');
+                    if (slot.textContent === time) {
+                        slot.classList.add('selected');
+                    }
+                });
+                
+                // Show booking form
+                bookingTimeText.textContent = `${formatDisplayDate(selectedDate)} às ${time}`;
+                bookingForm.classList.remove('hidden');
+                
+                // Scroll to form
+                bookingForm.scrollIntoView({ behavior: 'smooth' });
+            }
+            
+            // Handle form submission
+            appointmentForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const name = document.getElementById('name').value;
+                const email = document.getElementById('email').value;
+                const phone = document.getElementById('phone').value;
+                const notes = document.getElementById('notes').value;
+                const reminders = document.getElementById('reminders').checked;
+                
+                // Show confirmation modal
+                confirmationDate.textContent = formatDisplayDate(selectedDate);
+                confirmationTime.textContent = selectedTime;
+                confirmationName.textContent = name;
+                
+                // Set Google Calendar link
+                const startDateTime = `${formatDate(selectedDate)}T${selectedTime.replace(':', '')}00`;
+                const endTime = parseInt(selectedTime.split(':')[0]) + 1;
+                const endDateTime = `${formatDate(selectedDate)}T${String(endTime).padStart(2, '0')}${selectedTime.split(':')[1]}00`;
+                
+                const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&dates=${startDateTime}/${endDateTime}&text=Consulta+HealthPlus&details=${encodeURIComponent(`Paciente: ${name}\nTelefone: ${phone}\nObservações: ${notes || 'Nenhuma'}`)}&location=HealthPlus+Clínica+Médica`;
+                googleCalendarBtn.href = googleCalendarUrl;
+                
+                // Show modal
+                confirmationModal.classList.remove('modal-hidden');
+                confirmationModal.classList.add('modal-visible');
+                
+                // Reset form
+                appointmentForm.reset();
+            });
+            
+            // Cancel booking
+            cancelBookingBtn.addEventListener('click', function() {
+                bookingForm.classList.add('hidden');
+                timeSlotsSection.scrollIntoView({ behavior: 'smooth' });
+            });
+            
+            // Close modal
+            closeModalBtn.addEventListener('click', function() {
+                confirmationModal.classList.add('modal-hidden');
+                confirmationModal.classList.remove('modal-visible');
+                
+                // Reset selection
+                selectedDate = null;
+                selectedTime = null;
+                timeSlotsSection.classList.add('hidden');
+                bookingForm.classList.add('hidden');
+                
+                // Remove selected classes
+                document.querySelectorAll('.calendar-day.selected').forEach(day => {
+                    day.classList.remove('selected');
+                });
+                
+                document.querySelectorAll('.time-slot.selected').forEach(slot => {
+                    slot.classList.remove('selected');
+                });
+            });
+            
+            // Previous month
+            prevMonthBtn.addEventListener('click', function() {
+                currentDate.setMonth(currentDate.getMonth() - 1);
+                generateCalendar();
+            });
+            
+            // Next month
+            nextMonthBtn.addEventListener('click', function() {
+                currentDate.setMonth(currentDate.getMonth() + 1);
+                generateCalendar();
+            });
+            
+            // Initialize calendar
+            generateCalendar();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produtividade App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+        @keyframes strike {
+            0% { width: 0; }
+            100% { width: 100%; }
+        }
+        .strike-animation {
+            position: relative;
+        }
+        .strike-animation::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #4ade80;
+            animation: strike 0.3s ease-out forwards;
+        }
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .progress-ring__circle {
+            transition: stroke-dashoffset 0.5s;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+        .notification {
+            animation: slideIn 0.3s ease-out;
+        }
+        .task-item {
+            transition: all 0.3s ease;
+        }
+        .checkbox-custom {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            border: 2px solid #3b82f6;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .checkbox-custom:checked {
+            background-color: #3b82f6;
+        }
+        .checkbox-custom:checked::after {
+            content: '\2713';
+            color: white;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans antialiased">
+    <div class="max-w-md mx-auto bg-white min-h-screen shadow-lg flex flex-col">
+        <!-- Header -->
+        <header class="bg-blue-600 text-white p-4 shadow-md">
+            <div class="flex justify-between items-center">
+                <h1 class="text-xl font-bold">Produtividade App</h1>
+                <div class="flex space-x-2">
+                    <button id="syncBtn" class="p-2 rounded-full hover:bg-blue-700 transition">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                    <button class="p-2 rounded-full hover:bg-blue-700 transition">
+                        <i class="fas fa-bell"></i>
+                    </button>
+                </div>
+            </div>
+            <div id="syncStatus" class="text-xs mt-1 opacity-0 transition-opacity duration-300">
+                <span class="sync-text">Sincronizado</span>
+                <i class="fas fa-check ml-1"></i>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto p-4">
+            <!-- Tasks Tab -->
+            <div id="tasks-tab" class="tab-content active">
+                <div class="mb-6">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-4">Minhas Tarefas</h2>
+                    <div class="flex mb-4">
+                        <input 
+                            id="newTaskInput" 
+                            type="text" 
+                            placeholder="Adicionar nova tarefa..." 
+                            class="flex-1 p-3 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                        <button 
+                            id="addTaskBtn" 
+                            class="bg-blue-600 text-white px-4 rounded-r-lg hover:bg-blue-700 transition"
+                        >
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    <div id="taskList" class="space-y-3">
+                        <!-- Tasks will be added here dynamically -->
+                    </div>
+                </div>
+
+                <div class="mt-8">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-4">Progresso Diário</h2>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm font-medium text-gray-700">Tarefas concluídas</span>
+                            <span id="completedCount" class="text-sm font-bold text-green-600">0/0</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5">
+                            <div id="progressBar" class="bg-green-500 h-2.5 rounded-full" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calendar Tab -->
+            <div id="calendar-tab" class="tab-content">
+                <h2 class="text-lg font-semibold text-gray-800 mb-4">Calendário</h2>
+                <div class="bg-white p-4 rounded-lg shadow mb-4">
+                    <div class="flex justify-between items-center mb-4">
+                        <button class="p-2 rounded-full hover:bg-gray-100">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <h3 class="font-medium">Junho 2023</h3>
+                        <button class="p-2 rounded-full hover:bg-gray-100">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-7 gap-1 text-center">
+                        <div class="text-xs font-medium text-gray-500 py-1">Dom</div>
+                        <div class="text-xs font-medium text-gray-500 py-1">Seg</div>
+                        <div class="text-xs font-medium text-gray-500 py-1">Ter</div>
+                        <div class="text-xs font-medium text-gray-500 py-1">Qua</div>
+                        <div class="text-xs font-medium text-gray-500 py-1">Qui</div>
+                        <div class="text-xs font-medium text-gray-500 py-1">Sex</div>
+                        <div class="text-xs font-medium text-gray-500 py-1">Sáb</div>
+                        
+                        <!-- Calendar days -->
+                        <div class="py-1 text-gray-400">28</div>
+                        <div class="py-1 text-gray-400">29</div>
+                        <div class="py-1 text-gray-400">30</div>
+                        <div class="py-1 text-gray-400">31</div>
+                        <div class="py-1">1</div>
+                        <div class="py-1">2</div>
+                        <div class="py-1">3</div>
+                        
+                        <div class="py-1">4</div>
+                        <div class="py-1">5</div>
+                        <div class="py-1">6</div>
+                        <div class="py-1">7</div>
+                        <div class="py-1">8</div>
+                        <div class="py-1">9</div>
+                        <div class="py-1">10</div>
+                        
+                        <div class="py-1">11</div>
+                        <div class="py-1">12</div>
+                        <div class="py-1">13</div>
+                        <div class="py-1">14</div>
+                        <div class="py-1">15</div>
+                        <div class="py-1">16</div>
+                        <div class="py-1">17</div>
+                        
+                        <div class="py-1">18</div>
+                        <div class="py-1">19</div>
+                        <div class="py-1">20</div>
+                        <div class="py-1">21</div>
+                        <div class="py-1">22</div>
+                        <div class="py-1">23</div>
+                        <div class="py-1">24</div>
+                        
+                        <div class="py-1">25</div>
+                        <div class="py-1">26</div>
+                        <div class="py-1 bg-blue-100 text-blue-800 rounded-full font-medium">27</div>
+                        <div class="py-1">28</div>
+                        <div class="py-1">29</div>
+                        <div class="py-1">30</div>
+                        <div class="py-1 text-gray-400">1</div>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <h3 class="font-medium text-gray-800 mb-2">Eventos de Hoje</h3>
+                    <div class="space-y-2">
+                        <div class="bg-blue-50 p-3 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="w-2 h-8 bg-blue-500 rounded-full mr-3"></div>
+                                <div>
+                                    <p class="font-medium">Reunião de equipe</p>
+                                    <p class="text-sm text-gray-600">10:00 - 11:30</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-green-50 p-3 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="w-2 h-8 bg-green-500 rounded-full mr-3"></div>
+                                <div>
+                                    <p class="font-medium">Almoço com cliente</p>
+                                    <p class="text-sm text-gray-600">12:30 - 14:00</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Tab -->
+            <div id="profile-tab" class="tab-content">
+                <div class="flex flex-col items-center mb-6">
+                    <div class="w-24 h-24 rounded-full bg-blue-100 flex items-center justify-center mb-3">
+                        <i class="fas fa-user text-blue-500 text-4xl"></i>
+                    </div>
+                    <h2 class="text-xl font-semibold text-gray-800">Usuário</h2>
+                    <p class="text-gray-600 text-sm">usuario@email.com</p>
+                </div>
+                
+                <div class="mb-6">
+                    <h3 class="font-medium text-gray-800 mb-3">Metas Mensais</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-white p-4 rounded-lg shadow">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-sm font-medium text-gray-700">Produtividade</span>
+                                <span class="text-sm font-bold text-blue-600">65%</span>
+                            </div>
+                            <div class="relative w-full h-2 bg-gray-200 rounded-full">
+                                <div class="absolute top-0 left-0 h-2 bg-blue-500 rounded-full" style="width: 65%"></div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-sm font-medium text-gray-700">Tarefas</span>
+                                <span class="text-sm font-bold text-green-600">80%</span>
+                            </div>
+                            <div class="relative w-full h-2 bg-gray-200 rounded-full">
+                                <div class="absolute top-0 left-0 h-2 bg-green-500 rounded-full" style="width: 80%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <h3 class="font-medium text-gray-800 mb-3">Estatísticas</h3>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <div class="flex justify-between mb-3">
+                            <div class="text-center">
+                                <p class="text-2xl font-bold text-blue-600">24</p>
+                                <p class="text-xs text-gray-600">Tarefas concluídas</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-2xl font-bold text-green-600">5</p>
+                                <p class="text-xs text-gray-600">Dias consecutivos</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-2xl font-bold text-purple-600">87%</p>
+                                <p class="text-xs text-gray-600">Eficiência</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="space-y-2">
+                    <button class="w-full p-3 bg-white rounded-lg shadow text-left flex items-center hover:bg-gray-50 transition">
+                        <i class="fas fa-cog text-gray-500 mr-3"></i>
+                        <span>Configurações</span>
+                    </button>
+                    <button class="w-full p-3 bg-white rounded-lg shadow text-left flex items-center hover:bg-gray-50 transition">
+                        <i class="fas fa-question-circle text-gray-500 mr-3"></i>
+                        <span>Ajuda</span>
+                    </button>
+                    <button class="w-full p-3 bg-white rounded-lg shadow text-left flex items-center hover:bg-gray-50 transition">
+                        <i class="fas fa-sign-out-alt text-gray-500 mr-3"></i>
+                        <span>Sair</span>
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Tab Bar -->
+        <nav class="bg-white border-t border-gray-200 p-2">
+            <div class="flex justify-around">
+                <button 
+                    data-tab="tasks-tab" 
+                    class="tab-btn flex flex-col items-center p-2 text-blue-600"
+                >
+                    <i class="fas fa-tasks text-xl"></i>
+                    <span class="text-xs mt-1">Tarefas</span>
+                </button>
+                <button 
+                    data-tab="calendar-tab" 
+                    class="tab-btn flex flex-col items-center p-2 text-gray-500 hover:text-blue-600"
+                >
+                    <i class="far fa-calendar-alt text-xl"></i>
+                    <span class="text-xs mt-1">Calendário</span>
+                </button>
+                <button 
+                    data-tab="profile-tab" 
+                    class="tab-btn flex flex-col items-center p-2 text-gray-500 hover:text-blue-600"
+                >
+                    <i class="far fa-user text-xl"></i>
+                    <span class="text-xs mt-1">Perfil</span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Notification -->
+        <div id="notification" class="fixed top-4 right-4 bg-white p-4 rounded-lg shadow-lg max-w-xs hidden notification">
+            <div class="flex items-start">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-bell text-yellow-500 text-xl"></i>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-sm font-medium text-gray-900" id="notification-title">Lembrete</h3>
+                    <p class="text-sm text-gray-500 mt-1" id="notification-message">Você tem uma tarefa pendente!</p>
+                </div>
+                <button class="ml-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg p-1.5">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const newTaskInput = document.getElementById('newTaskInput');
+            const addTaskBtn = document.getElementById('addTaskBtn');
+            const taskList = document.getElementById('taskList');
+            const syncBtn = document.getElementById('syncBtn');
+            const syncStatus = document.getElementById('syncStatus');
+            const completedCount = document.getElementById('completedCount');
+            const progressBar = document.getElementById('progressBar');
+            const notification = document.getElementById('notification');
+            
+            // Sample tasks
+            let tasks = [
+                { id: 1, text: "Finalizar relatório mensal", completed: false, dueDate: null },
+                { id: 2, text: "Enviar e-mail para cliente", completed: false, dueDate: null },
+                { id: 3, text: "Reunião com equipe de marketing", completed: true, dueDate: null },
+                { id: 4, text: "Atualizar planilha de gastos", completed: false, dueDate: null }
+            ];
+            
+            // Load tasks from localStorage
+            function loadTasks() {
+                const savedTasks = localStorage.getItem('tasks');
+                if (savedTasks) {
+                    tasks = JSON.parse(savedTasks);
+                }
+                renderTasks();
+                updateProgress();
+            }
+            
+            // Save tasks to localStorage
+            function saveTasks() {
+                localStorage.setItem('tasks', JSON.stringify(tasks));
+                showSyncStatus('Salvando alterações...', 'text-blue-500');
+                
+                // Simulate cloud sync
+                setTimeout(() => {
+                    showSyncStatus('Sincronizado com a nuvem', 'text-green-500');
+                }, 1000);
+            }
+            
+            // Show sync status
+            function showSyncStatus(text, colorClass) {
+                const syncText = syncStatus.querySelector('.sync-text');
+                const icon = syncStatus.querySelector('i');
+                
+                syncText.textContent = text;
+                syncStatus.className = `text-xs mt-1 transition-opacity duration-300 ${colorClass}`;
+                syncStatus.style.opacity = '1';
+                
+                if (colorClass.includes('green')) {
+                    icon.className = 'fas fa-check ml-1';
+                } else {
+                    icon.className = 'fas fa-circle-notch fa-spin ml-1';
+                }
+                
+                setTimeout(() => {
+                    syncStatus.style.opacity = '0';
+                }, 3000);
+            }
+            
+            // Render tasks to the DOM
+            function renderTasks() {
+                taskList.innerHTML = '';
+                
+                // Separate completed and pending tasks
+                const pendingTasks = tasks.filter(task => !task.completed);
+                const completedTasks = tasks.filter(task => task.completed);
+                
+                // Render pending tasks first
+                pendingTasks.forEach(task => {
+                    taskList.appendChild(createTaskElement(task));
+                });
+                
+                // Then render completed tasks
+                completedTasks.forEach(task => {
+                    taskList.appendChild(createTaskElement(task));
+                });
+            }
+            
+            // Create a task element
+            function createTaskElement(task) {
+                const taskElement = document.createElement('div');
+                taskElement.className = `task-item bg-white p-3 rounded-lg shadow flex items-center ${task.completed ? 'opacity-75' : ''}`;
+                taskElement.dataset.id = task.id;
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.className = 'checkbox-custom mr-3';
+                checkbox.checked = task.completed;
+                checkbox.addEventListener('change', () => toggleTaskComplete(task.id));
+                
+                const taskText = document.createElement('span');
+                taskText.className = `flex-1 ${task.completed ? 'strike-animation text-gray-500' : 'text-gray-800'}`;
+                taskText.textContent = task.text;
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'ml-2 text-gray-400 hover:text-red-500';
+                deleteBtn.innerHTML = '<i class="far fa-trash-alt"></i>';
+                deleteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    deleteTask(task.id);
+                });
+                
+                taskElement.appendChild(checkbox);
+                taskElement.appendChild(taskText);
+                taskElement.appendChild(deleteBtn);
+                
+                return taskElement;
+            }
+            
+            // Add a new task
+            function addTask() {
+                const text = newTaskInput.value.trim();
+                if (text) {
+                    const newTask = {
+                        id: Date.now(),
+                        text: text,
+                        completed: false,
+                        dueDate: null
+                    };
+                    
+                    tasks.unshift(newTask);
+                    newTaskInput.value = '';
+                    renderTasks();
+                    updateProgress();
+                    saveTasks();
+                    
+                    // Simulate notification for tasks with specific keywords
+                    if (text.toLowerCase().includes('reunião') || text.toLowerCase().includes('enviar')) {
+                        setTimeout(() => {
+                            showNotification('Lembrete', `Não se esqueça de: "${text}"`);
+                        }, 2000);
+                    }
+                }
+            }
+            
+            // Toggle task completion
+            function toggleTaskComplete(taskId) {
+                const taskIndex = tasks.findIndex(task => task.id === taskId);
+                if (taskIndex !== -1) {
+                    tasks[taskIndex].completed = !tasks[taskIndex].completed;
+                    
+                    // Move completed task to the end
+                    if (tasks[taskIndex].completed) {
+                        const completedTask = tasks.splice(taskIndex, 1)[0];
+                        tasks.push(completedTask);
+                    }
+                    
+                    renderTasks();
+                    updateProgress();
+                    saveTasks();
+                }
+            }
+            
+            // Delete a task
+            function deleteTask(taskId) {
+                tasks = tasks.filter(task => task.id !== taskId);
+                renderTasks();
+                updateProgress();
+                saveTasks();
+            }
+            
+            // Update progress bar and count
+            function updateProgress() {
+                const totalTasks = tasks.length;
+                const completedTasks = tasks.filter(task => task.completed).length;
+                const percentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+                
+                completedCount.textContent = `${completedTasks}/${totalTasks}`;
+                progressBar.style.width = `${percentage}%`;
+                
+                // Change color based on percentage
+                if (percentage < 30) {
+                    progressBar.className = 'bg-red-500 h-2.5 rounded-full';
+                } else if (percentage < 70) {
+                    progressBar.className = 'bg-yellow-500 h-2.5 rounded-full';
+                } else {
+                    progressBar.className = 'bg-green-500 h-2.5 rounded-full';
+                }
+            }
+            
+            // Show notification
+            function showNotification(title, message) {
+                document.getElementById('notification-title').textContent = title;
+                document.getElementById('notification-message').textContent = message;
+                notification.classList.remove('hidden');
+                
+                setTimeout(() => {
+                    notification.classList.add('hidden');
+                }, 5000);
+            }
+            
+            // Tab switching
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const tabId = button.getAttribute('data-tab');
+                    
+                    // Update active tab button
+                    tabButtons.forEach(btn => {
+                        btn.classList.remove('text-blue-600');
+                        btn.classList.add('text-gray-500', 'hover:text-blue-600');
+                    });
+                    button.classList.add('text-blue-600');
+                    button.classList.remove('text-gray-500', 'hover:text-blue-600');
+                    
+                    // Update active tab content
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+            
+            // Event listeners
+            addTaskBtn.addEventListener('click', addTask);
+            newTaskInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    addTask();
+                }
+            });
+            
+            syncBtn.addEventListener('click', () => {
+                showSyncStatus('Sincronizando...', 'text-blue-500');
+                setTimeout(() => {
+                    showSyncStatus('Sincronizado com a nuvem', 'text-green-500');
+                }, 1500);
+            });
+            
+            // Close notification
+            notification.querySelector('button').addEventListener('click', () => {
+                notification.classList.add('hidden');
+            });
+            
+            // Initialize
+            loadTasks();
+            
+            // Request notification permission
+            if ('Notification' in window) {
+                Notification.requestPermission();
+            }
+        });
+    </script>
+</body>
+</html>
