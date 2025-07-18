@@ -9,9 +9,26 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Custom CSS for animations and effects */
+        .card-hover {
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+        
         .card-hover:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .card-hover::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #4f46e5, #7c3aed);
         }
         
         .modal {
@@ -131,60 +148,108 @@
     <!-- Projects Section -->
   <section class="mb-16 text-center">
       <h2 class="text-3xl font-semibold mb-6">Projetos em Destaque</h2>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 
         <!-- Projeto 1 -->
-        <div class="bg-white rounded-lg p-6 shadow-lg card-hover text-center">
-          <h3 class="text-xl font-semibold mb-3">Dashboard Financeiro</h3>
-          <p class="text-sm mb-4">Análises financeiras com gráficos interativos e relatórios.</p>
-          <a href="DashboardFinanceiro.html" target="_blank">Ver site completo
-          </a>
-
+        <div class="bg-white p-6 shadow-md card-hover flex flex-col">
+          <div class="mb-4">
+            <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-3 mx-auto">
+              <i class="fas fa-chart-line text-indigo-600 text-xl"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2 text-gray-800">Dashboard Financeiro</h3>
+            <p class="text-gray-600 mb-4">Análises financeiras com gráficos interativos e relatórios.</p>
+          </div>
+          <div class="mt-auto">
+            <a href="DashboardFinanceiro.html" target="_blank" class="inline-flex items-center text-indigo-600 font-medium hover:text-indigo-800 transition">
+              Ver site completo
+              <i class="fas fa-arrow-right ml-2"></i>
+            </a>
+          </div>
         </div>
 
         <!-- Projeto 2 -->
-        <div class="bg-white rounded-lg p-6 shadow-lg card-hover text-center">
-          <h3 class="text-xl font-semibold mb-3">Plataforma de E-commerce</h3>
-          <p class="text-sm mb-4">Loja virtual com checkout, integração de pagamento e painel admin.</p>
-          <a href="PlataformadeEcomerce.html" target="_blank" class="inline-block bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition">
-            Ver site completo
-          </a>
+        <div class="bg-white p-6 shadow-md card-hover flex flex-col">
+          <div class="mb-4">
+            <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-3 mx-auto">
+              <i class="fas fa-shopping-cart text-indigo-600 text-xl"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2 text-gray-800">Plataforma de E-commerce</h3>
+            <p class="text-gray-600 mb-4">Loja virtual com checkout, integração de pagamento e painel admin.</p>
+          </div>
+          <div class="mt-auto">
+            <a href="PlataformadeEcomerce.html" target="_blank" class="inline-flex items-center text-indigo-600 font-medium hover:text-indigo-800 transition">
+              Ver site completo
+              <i class="fas fa-arrow-right ml-2"></i>
+            </a>
+          </div>
         </div>
 
         <!-- Projeto 3 -->
-        <div class="bg-white rounded-lg p-6 shadow-lg card-hover text-center">
-          <h3 class="text-xl font-semibold mb-3">Sistema de Agendamento</h3>
-          <p class="text-sm mb-4">Agendamentos online com integração Google Calendar e lembretes.</p>
-          <a href="SistemadeAgendamento.html" target="_blank" class="inline-block bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition">
-            Ver site completo
-          </a>
+        <div class="bg-white p-6 shadow-md card-hover flex flex-col">
+          <div class="mb-4">
+            <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-3 mx-auto">
+              <i class="fas fa-calendar-alt text-indigo-600 text-xl"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2 text-gray-800">Sistema de Agendamento</h3>
+            <p class="text-gray-600 mb-4">Agendamentos online com integração Google Calendar e lembretes.</p>
+          </div>
+          <div class="mt-auto">
+            <a href="SistemadeAgendamento.html" target="_blank" class="inline-flex items-center text-indigo-600 font-medium hover:text-indigo-800 transition">
+              Ver site completo
+              <i class="fas fa-arrow-right ml-2"></i>
+            </a>
+          </div>
         </div>
 
         <!-- Projeto 4 (sem página definida) -->
-        <div class="bg-white rounded-lg p-6 shadow-lg card-hover text-center">
-          <h3 class="text-xl font-semibold mb-3">Rede Social Profissional</h3>
-          <p class="text-sm mb-4">Conexões entre usuários, feed, recomendações e mensagens privadas.</p>
-          <span class="inline-block bg-gray-400 text-white font-bold py-2 px-4 rounded cursor-not-allowed opacity-70">
-            Em breve
-          </span>
+        <div class="bg-white p-6 shadow-md card-hover flex flex-col">
+          <div class="mb-4">
+            <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-3 mx-auto">
+              <i class="fas fa-users text-indigo-600 text-xl"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2 text-gray-800">Rede Social Profissional</h3>
+            <p class="text-gray-600 mb-4">Conexões entre usuários, feed, recomendações e mensagens privadas.</p>
+          </div>
+          <div class="mt-auto">
+            <span class="inline-flex items-center bg-gray-100 text-gray-500 font-medium py-2 px-4 rounded-lg">
+              <i class="fas fa-clock mr-2"></i>
+              Em breve
+            </span>
+          </div>
         </div>
 
         <!-- Projeto 5 -->
-        <div class="bg-white rounded-lg p-6 shadow-lg card-hover text-center">
-          <h3 class="text-xl font-semibold mb-3">ERP Customizado</h3>
-          <p class="text-sm mb-4">Gestão de estoque, vendas, financeiro e relatórios.</p>
-          <a href="ERPCustomizado.html" target="_blank" class="inline-block bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition">
-            Ver site completo
-          </a>
+        <div class="bg-white p-6 shadow-md card-hover flex flex-col">
+          <div class="mb-4">
+            <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-3 mx-auto">
+              <i class="fas fa-chart-pie text-indigo-600 text-xl"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2 text-gray-800">ERP Customizado</h3>
+            <p class="text-gray-600 mb-4">Gestão de estoque, vendas, financeiro e relatórios.</p>
+          </div>
+          <div class="mt-auto">
+            <a href="ERPCustomizado.html" target="_blank" class="inline-flex items-center text-indigo-600 font-medium hover:text-indigo-800 transition">
+              Ver site completo
+              <i class="fas fa-arrow-right ml-2"></i>
+            </a>
+          </div>
         </div>
 
         <!-- Projeto 6 -->
-        <div class="bg-white rounded-lg p-6 shadow-lg card-hover text-center">
-          <h3 class="text-xl font-semibold mb-3">Aplicativo de Produtividade</h3>
-          <p class="text-sm mb-4">Gerenciamento de tarefas e metas com sincronização em nuvem.</p>
-          <a href="ProdutividadeApp.html" target="_blank" class="inline-block bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition">
-            Ver site completo
-          </a>
+        <div class="bg-white p-6 shadow-md card-hover flex flex-col">
+          <div class="mb-4">
+            <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-3 mx-auto">
+              <i class="fas fa-tasks text-indigo-600 text-xl"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2 text-gray-800">Aplicativo de Produtividade</h3>
+            <p class="text-gray-600 mb-4">Gerenciamento de tarefas e metas com sincronização em nuvem.</p>
+          </div>
+          <div class="mt-auto">
+            <a href="ProdutividadeApp.html" target="_blank" class="inline-flex items-center text-indigo-600 font-medium hover:text-indigo-800 transition">
+              Ver site completo
+              <i class="fas fa-arrow-right ml-2"></i>
+            </a>
+          </div>
         </div>
 
       </div>
